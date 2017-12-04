@@ -51,6 +51,10 @@ namespace OTR
         public static bool VerifyFile(byte[] key, String sourceFile)
         {
             bool err = false;
+            if (!File.Exists(sourceFile))
+            {
+                return false;
+            }
             // Initialize the keyed hash object. 
             using (HMACSHA256 hmac = new HMACSHA256(key))
             {
