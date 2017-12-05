@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Alice.cs" />
     <Compile Include="Bob.cs" />
+    <Compile Include="IM.cs" />
     <Compile Include="MAC.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

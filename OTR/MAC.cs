@@ -20,7 +20,7 @@ namespace OTR
             // Initialize the keyed hash object.
             using (HMACSHA256 hmac = new HMACSHA256(key))
             {
-                
+
                 using (FileStream inStream = new FileStream(sourceFile, FileMode.Open))
                 {
                     using (FileStream outStream = new FileStream(destFile, FileMode.Create))
@@ -46,6 +46,38 @@ namespace OTR
             }
 
             return false;
+        }
+
+        public static byte[] Sign(byte[] key, String input)
+        {
+            
+            // Initialize the keyed hash object.
+            using (HMACSHA256 hmac = new HMACSHA256(key))
+            {
+                // Compute the hash of the input file.
+                return hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
+            }
+        }
+
+        public static bool Verify(byte[] key, String input)
+        {
+            // Initialize the keyed hash object.
+            using (HMACSHA256 hmac = new HMACSHA256(key))
+            {
+                // Create an array to hold the keyed hash value read from the file.
+                byte[] StoredHash = new byte[hmac.HashSize / 8];
+
+                byte[] ComputeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
+                for (int i = 0; i < StoredHash.Length; i++)
+                {
+                    if (ComputeHash[i] != StoredHash[i])
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public static bool VerifyFile(byte[] key, String sourceFile)
