@@ -15,13 +15,25 @@ namespace OTR
             alice.SetPrivateKey(bob.BobPublicKey);
             byte[] SecretMsgToSend;
             byte[] iv;
-            byte[] KeyForSigning;
-            IM InstantMessaging = new IM();
-            KeyForSigning = Encoding.UTF8.GetBytes("KeyForSigning");
-            InstantMessaging.Send(alice.AliceDeriveKey, "Hello", out SecretMsgToSend,out iv);
-            //MAC.SignFile(KeyForSigning, "", "");
-            string DecryptedMsg = InstantMessaging.Receive(bob.BobDeriveKey, SecretMsgToSend, iv);
+            byte[] KeyForSigning = Encoding.UTF8.GetBytes("KeyForSigning");
+            string Msg = "I am the bone of my sword";
 
+            /*Slanje i primanje poruke*/
+            IM InstantMessaging = new IM();
+            InstantMessaging.Send(alice.CurrentAliceDeriveKey, Msg, out SecretMsgToSend,out iv);
+            
+            string DecryptedMsg = InstantMessaging.Receive(bob.CurrentBobDeriveKey, SecretMsgToSend, iv);
+
+            /* Poptpisivanje poruke i potvrđivanje */
+            byte[] Signed = MAC.Sign(KeyForSigning, Msg);
+            if (MAC.Verify(KeyForSigning, Signed))
+            {
+                Console.WriteLine("Potpis potvrđen");
+            }
+            else
+            {
+                Console.WriteLine("Potpis NIJE potvrđen");
+            }
         }
     }
 }

@@ -59,18 +59,17 @@ namespace OTR
             }
         }
 
-        public static bool Verify(byte[] key, String input)
+        public static bool Verify(byte[] key, byte[] computeHash)
         {
             // Initialize the keyed hash object.
             using (HMACSHA256 hmac = new HMACSHA256(key))
             {
                 // Create an array to hold the keyed hash value read from the file.
                 byte[] StoredHash = new byte[hmac.HashSize / 8];
-
-                byte[] ComputeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
+                Array.Copy(computeHash, StoredHash, StoredHash.Length);               
                 for (int i = 0; i < StoredHash.Length; i++)
                 {
-                    if (ComputeHash[i] != StoredHash[i])
+                    if (computeHash[i] != StoredHash[i])
                     {
                         return false;
                     }
@@ -79,6 +78,7 @@ namespace OTR
 
             return true;
         }
+
 
         public static bool VerifyFile(byte[] key, String sourceFile)
         {

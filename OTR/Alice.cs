@@ -11,7 +11,8 @@ namespace OTR
     public class Alice
     {
         public byte[] AlicePublicKey;
-        internal byte[] AliceDeriveKey = null;
+        internal byte[] PreviousAliceDeriveKey = null;
+        internal byte[] CurrentAliceDeriveKey = null;
         private ECDiffieHellmanCng alice;
 
         public Alice()
@@ -31,15 +32,36 @@ namespace OTR
                 alice.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
                 alice.HashAlgorithm = CngAlgorithm.Sha256;
                 AlicePublicKey = alice.PublicKey.ToByteArray();
-                //CngKey k = CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob);
-                AliceDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
+                CurrentAliceDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
             }
         }
 
         public void SetPrivateKey(byte[] bobPublicKey)
         {
-            AliceDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
+            CurrentAliceDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
         }
 
+        public void GenerateNewKey()
+        {
+            using (ECDiffieHellmanCng alice = new ECDiffieHellmanCng())
+            {
+                alice.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
+                alice.HashAlgorithm = CngAlgorithm.Sha256;
+                AlicePublicKey = alice.PublicKey.ToByteArray();
+                PreviousAliceDeriveKey = CurrentAliceDeriveKey;
+            }
+        }
+
+        public void GenerateNewKey(byte[] bobPublicKey)
+        {
+            using (ECDiffieHellmanCng alice = new ECDiffieHellmanCng())
+            {
+                alice.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
+                alice.HashAlgorithm = CngAlgorithm.Sha256;
+                AlicePublicKey = alice.PublicKey.ToByteArray();
+                PreviousAliceDeriveKey = CurrentAliceDeriveKey;
+                CurrentAliceDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
+            }
+        }
     }
 }

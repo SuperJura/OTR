@@ -11,7 +11,8 @@ namespace OTR
     public class Bob
     {
         public byte[] BobPublicKey;
-        internal byte[] BobDeriveKey;
+        internal byte[] PreviousBobDeriveKey;
+        internal byte[] CurrentBobDeriveKey;
         private ECDiffieHellmanCng bob;
         public Bob()
         {
@@ -32,13 +33,36 @@ namespace OTR
                 bob.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
                 bob.HashAlgorithm = CngAlgorithm.Sha256;
                 BobPublicKey = bob.PublicKey.ToByteArray();
-                BobDeriveKey = bob.DeriveKeyMaterial(CngKey.Import(alicePublicKey, CngKeyBlobFormat.EccPublicBlob));
+                CurrentBobDeriveKey = bob.DeriveKeyMaterial(CngKey.Import(alicePublicKey, CngKeyBlobFormat.EccPublicBlob));
             }
         }
 
         public void SetPrivateKey(byte[] alicePublicKey)
         {
-            BobDeriveKey = bob.DeriveKeyMaterial(CngKey.Import(alicePublicKey, CngKeyBlobFormat.EccPublicBlob));
+            CurrentBobDeriveKey = bob.DeriveKeyMaterial(CngKey.Import(alicePublicKey, CngKeyBlobFormat.EccPublicBlob));
+        }
+
+        public void GenerateNewKey()
+        {
+            using (ECDiffieHellmanCng bob = new ECDiffieHellmanCng())
+            {
+                bob.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
+                bob.HashAlgorithm = CngAlgorithm.Sha256;
+                BobPublicKey = bob.PublicKey.ToByteArray();
+                PreviousBobDeriveKey = CurrentBobDeriveKey;
+            }
+        }
+
+        public void GenerateNewKey(byte[] alicePublicKey)
+        {
+            using (ECDiffieHellmanCng bob = new ECDiffieHellmanCng())
+            {
+                bob.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
+                bob.HashAlgorithm = CngAlgorithm.Sha256;
+                BobPublicKey = bob.PublicKey.ToByteArray();
+                PreviousBobDeriveKey = CurrentBobDeriveKey;
+                CurrentBobDeriveKey = bob.DeriveKeyMaterial(CngKey.Import(alicePublicKey, CngKeyBlobFormat.EccPublicBlob));
+            }
         }
     }
 }
