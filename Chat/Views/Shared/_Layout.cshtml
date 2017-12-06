@@ -27,6 +27,16 @@
             </div>
         </div>
     </div>*@
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        @if (Session["name"] != null)
+        {
+            <div class="container">
+                <span class="white navbar-header"> Welcome to OTR Chat, @Session["name"]</span>
+                &nbsp;
+                @Html.ActionLink("Logout", "Logout", "Login")
+            </div>
+        }
+    </div>
     <div class="container body-content">
         @RenderBody()
         <hr />

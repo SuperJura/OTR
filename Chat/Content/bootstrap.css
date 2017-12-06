@@ -32,6 +32,13 @@ hgroup,
 main,
 nav,
 section,
+
+/*TU PISEM CSS JER SAM LJEN STAVITI U NOVU FAJLU*/
+.white{
+    color:white;
+}
+
+
 summary {
   display: block;
 }
