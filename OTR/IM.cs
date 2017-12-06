@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OTR
 {
-    class IM
+    public static class IM
     {
-        public void Send(byte[] publicKey, string secretMessage, out byte[] encryptedMessage, out byte[] iv)
+        public static void OTRSend(byte[] publicKey, string secretMessage, out byte[] encryptedMessage, out byte[] iv)
         {
             using (Aes aes = new AesCryptoServiceProvider())
             {
@@ -32,9 +28,8 @@ namespace OTR
             }
         }
 
-        public string Receive(byte[] privateKey, byte[] encryptedMessage, byte[] iv)
+        public static string OTRReceive(byte[] privateKey, byte[] encryptedMessage, byte[] iv)
         {
-
             using (Aes aes = new AesCryptoServiceProvider())
             {
                 aes.Key = privateKey;

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OTR
 {
@@ -44,13 +41,11 @@ namespace OTR
                     }
                 }
             }
-
             return false;
         }
 
         public static byte[] Sign(byte[] key, String input)
         {
-            
             // Initialize the keyed hash object.
             using (HMACSHA256 hmac = new HMACSHA256(key))
             {
@@ -58,27 +53,6 @@ namespace OTR
                 return hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
             }
         }
-
-        public static bool Verify(byte[] key, byte[] computeHash)
-        {
-            // Initialize the keyed hash object.
-            using (HMACSHA256 hmac = new HMACSHA256(key))
-            {
-                // Create an array to hold the keyed hash value read from the file.
-                byte[] StoredHash = new byte[hmac.HashSize / 8];
-                Array.Copy(computeHash, StoredHash, StoredHash.Length);               
-                for (int i = 0; i < StoredHash.Length; i++)
-                {
-                    if (computeHash[i] != StoredHash[i])
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
 
         public static bool VerifyFile(byte[] key, String sourceFile)
         {
@@ -122,5 +96,24 @@ namespace OTR
             }
 
         } //end VerifyFile
+
+        public static bool Verify(byte[] key, byte[] computeHash)
+        {
+            // Initialize the keyed hash object.
+            using (HMACSHA256 hmac = new HMACSHA256(key))
+            {
+                // Create an array to hold the keyed hash value read from the file.
+                byte[] StoredHash = new byte[hmac.HashSize / 8];
+                Array.Copy(computeHash, StoredHash, StoredHash.Length);               
+                for (int i = 0; i < StoredHash.Length; i++)
+                {
+                    if (computeHash[i] != StoredHash[i])
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
     }
 }

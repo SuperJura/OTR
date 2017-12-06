@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2006
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OTR", "OTR\OTR.csproj", "{87C63C30-1C51-4021-BF8F-EEA6B81F173C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat", "Chat\Chat.csproj", "{AEFFB4AD-1FDF-4127-B994-E79A8328BC53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{87C63C30-1C51-4021-BF8F-EEA6B81F173C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87C63C30-1C51-4021-BF8F-EEA6B81F173C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87C63C30-1C51-4021-BF8F-EEA6B81F173C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEFFB4AD-1FDF-4127-B994-E79A8328BC53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEFFB4AD-1FDF-4127-B994-E79A8328BC53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEFFB4AD-1FDF-4127-B994-E79A8328BC53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEFFB4AD-1FDF-4127-B994-E79A8328BC53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
