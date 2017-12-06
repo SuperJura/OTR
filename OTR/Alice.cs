@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace OTR
 {
-    public class Alice
+    public class Alice : IOTRUser
     {
-        public byte[] AlicePublicKey;
-        internal byte[] PreviousAliceDeriveKey = null;
-        internal byte[] CurrentAliceDeriveKey = null;
+        public byte[] PublicKey;
+        public byte[] PreviousDeriveKey = null;
+        public byte[] CurrentDeriveKey = null;
         private ECDiffieHellmanCng alice;
 
         public Alice()
@@ -21,7 +21,7 @@ namespace OTR
 
             alice.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
             alice.HashAlgorithm = CngAlgorithm.Sha256;
-            AlicePublicKey = alice.PublicKey.ToByteArray();
+            PublicKey = alice.PublicKey.ToByteArray();
         }
 
         public Alice(byte[] bobPublicKey)
@@ -31,25 +31,23 @@ namespace OTR
 
                 alice.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
                 alice.HashAlgorithm = CngAlgorithm.Sha256;
-                AlicePublicKey = alice.PublicKey.ToByteArray();
-                CurrentAliceDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
+                PublicKey = alice.PublicKey.ToByteArray();
+                CurrentDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
             }
         }
 
-        public void SetPrivateKey(byte[] bobPublicKey)
+        public void SetDeriveKey(byte[] bobPublicKey)
         {
-            CurrentAliceDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
+            CurrentDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
         }
 
         public void GenerateNewKey()
         {
-            using (ECDiffieHellmanCng alice = new ECDiffieHellmanCng())
-            {
-                alice.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
-                alice.HashAlgorithm = CngAlgorithm.Sha256;
-                AlicePublicKey = alice.PublicKey.ToByteArray();
-                PreviousAliceDeriveKey = CurrentAliceDeriveKey;
-            }
+            alice = new ECDiffieHellmanCng();
+            alice.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
+            alice.HashAlgorithm = CngAlgorithm.Sha256;
+            PublicKey = alice.PublicKey.ToByteArray();
+            PreviousDeriveKey = CurrentDeriveKey;           
         }
 
         public void GenerateNewKey(byte[] bobPublicKey)
@@ -58,9 +56,9 @@ namespace OTR
             {
                 alice.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
                 alice.HashAlgorithm = CngAlgorithm.Sha256;
-                AlicePublicKey = alice.PublicKey.ToByteArray();
-                PreviousAliceDeriveKey = CurrentAliceDeriveKey;
-                CurrentAliceDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
+                PublicKey = alice.PublicKey.ToByteArray();
+                PreviousDeriveKey = CurrentDeriveKey;
+                CurrentDeriveKey = alice.DeriveKeyMaterial(CngKey.Import(bobPublicKey, CngKeyBlobFormat.EccPublicBlob));
             }
         }
     }
