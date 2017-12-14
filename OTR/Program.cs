@@ -38,21 +38,21 @@ namespace OTR
             alice.GenerateNewKey();
             // 2. Šalje Bobu svoj novi javni ključ u poruci enkriptiranu starim ključem
             Msg  = "Novi javni kljuc Alice";
-            OTRSend(alice.PreviousDeriveKey, Msg, out SecretMsgToSend, out iv);
+            OTRSend(alice.PreviousDeriveKey, Msg, out SecretMsgToSend);
             // 3. Bob prima tu poruku te generira novi set ključeva sa Aliceinim javim ključem
-            DecryptedMsg = OTRReceive(bob.CurrentDeriveKey, SecretMsgToSend, iv);
+            DecryptedMsg = OTRReceive(bob.CurrentDeriveKey, SecretMsgToSend);
             bob.GenerateNewKey(alice.PublicKey);
             // 4. Bob šalje Alice svoj novi javni ključ enkriptiran starim ključem
             Msg = "Novi javni kljuc Bob";
-            OTRSend(bob.PreviousDeriveKey, Msg, out SecretMsgToSend, out iv);
+            OTRSend(bob.PreviousDeriveKey, Msg, out SecretMsgToSend);
             // 5. Alice prima poruku sa Bobovim javim ključem i dekriptira sa starim ključem
-            DecryptedMsg = OTRReceive(alice.PreviousDeriveKey, SecretMsgToSend, iv);
+            DecryptedMsg = OTRReceive(alice.PreviousDeriveKey, SecretMsgToSend);
             // 6. Alice postavlja novi ključ koristeči Bobov novi javni ključ i zaboravlja stari
             alice.SetDeriveKey(bob.PublicKey);
             alice.PreviousDeriveKey = null;
             // 7. Alice šalje Bobu novu poruku enkriptiranu sa novim ključem kako bi potvrdila da je zaprimila novi javni ključ
-            OTRSend(alice.CurrentDeriveKey, Msg, out SecretMsgToSend, out iv);
-            DecryptedMsg = OTRReceive(bob.CurrentDeriveKey, SecretMsgToSend, iv);
+            OTRSend(alice.CurrentDeriveKey, Msg, out SecretMsgToSend);
+            DecryptedMsg = OTRReceive(bob.CurrentDeriveKey, SecretMsgToSend);
             //8. Bob zaboravlja stari ključ;
             bob.PreviousDeriveKey = null;
 
