@@ -36,22 +36,20 @@ namespace OTR
 
         public void GenerateNewKey()
         {
-            algorithm = new ECDiffieHellmanCng();
-            algorithm.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
-            algorithm.HashAlgorithm = CngAlgorithm.Sha256;
+            InitAlgorithm();
             PublicKey = algorithm.PublicKey.ToByteArray();
             PreviousDeriveKey = CurrentDeriveKey;          
         }
 
-        public void GenerateNewKey(byte[] alicePublicKey)
+        public void GenerateNewKey(byte[] otherPubKey)
         {
-            using (ECDiffieHellmanCng bob = new ECDiffieHellmanCng())
+            using (ECDiffieHellmanCng user = new ECDiffieHellmanCng())
             {
-                bob.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
-                bob.HashAlgorithm = CngAlgorithm.Sha256;
-                PublicKey = bob.PublicKey.ToByteArray();
+                user.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
+                user.HashAlgorithm = CngAlgorithm.Sha256;
+                PublicKey = user.PublicKey.ToByteArray();
                 PreviousDeriveKey = CurrentDeriveKey;
-                CurrentDeriveKey = bob.DeriveKeyMaterial(CngKey.Import(alicePublicKey, CngKeyBlobFormat.EccPublicBlob));
+                CurrentDeriveKey = user.DeriveKeyMaterial(CngKey.Import(otherPubKey, CngKeyBlobFormat.EccPublicBlob));
             }
         }
     }
