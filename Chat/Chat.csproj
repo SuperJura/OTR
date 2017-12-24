@@ -166,6 +166,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ChatUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serivces\ChatDatabase.cs" />
     <Compile Include="SignalR\ChatHub.cs" />
@@ -208,13 +209,10 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Login\Login.cshtml" />
-    <Content Include="Views\Chat\Login.cshtml" />
     <Content Include="Views\Chat\Index.cshtml" />
     <Content Include="Views\Shared\ListAllUser.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
   </ItemGroup>

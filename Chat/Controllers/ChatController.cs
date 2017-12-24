@@ -11,8 +11,16 @@ namespace Chat.Controllers
         public ActionResult Login(string name)
         {
             bool success = ChatDatabase.getInstance().addNewUser(name);
-            if(success) Session["name"] = name;
-            return View(success);
+            if (success)
+            {
+                Session["name"] = name;
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ViewBag.ErrorMsg = "Ime je zauzeto";
+                return RedirectToAction("Index","Login");
+            }
         }
 
         // GET: Chat

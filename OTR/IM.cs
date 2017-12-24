@@ -28,7 +28,12 @@ namespace OTR
                 }
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="publicKey">Ključ pošiljavetlja</param>
+        /// <param name="secretMessage"></param>
+        /// <param name="encryptedMessage"></param>
         public static void OTRSend(byte[] publicKey, string secretMessage, out byte[] encryptedMessage)
         {
             using (Aes aes = new AesCryptoServiceProvider())

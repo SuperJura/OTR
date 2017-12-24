@@ -2,6 +2,13 @@
     ViewBag.Title = "Login";
 }
 <h2>Login</h2>
+@if (ViewBag.ErrorMsg != null && !String.IsNullOrEmpty(ViewBag.ErrorMsg))
+{
+    <div class="alert alert-warning">
+        <strong>@ViewBag.ErrorMsg</strong>
+    </div>
+}
+
 @using (Html.BeginForm("Login", "Chat", FormMethod.Post))
 {
     <input type="Text" placeholder="Name" name="name">

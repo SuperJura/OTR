@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
 
 namespace OTR
 {
@@ -7,6 +8,7 @@ namespace OTR
         public byte[] PublicKey;
         public byte[] PreviousDeriveKey;
         public byte[] CurrentDeriveKey;
+        public byte[] KeyForSigning;
         private ECDiffieHellmanCng algorithm;
 
         public User()
@@ -51,6 +53,11 @@ namespace OTR
                 PreviousDeriveKey = CurrentDeriveKey;
                 CurrentDeriveKey = user.DeriveKeyMaterial(CngKey.Import(otherPubKey, CngKeyBlobFormat.EccPublicBlob));
             }
+        }
+
+        public void SetKeyForSigning(string key)
+        {
+            KeyForSigning = Encoding.UTF8.GetBytes(key);
         }
     }
 }

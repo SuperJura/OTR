@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using Chat.Serivces;
 using Chat.Filters;
+using OTR;
 
 namespace Chat.Controllers
 {
