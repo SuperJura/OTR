@@ -45,5 +45,70 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+    <script>
+
+        window.setInterval(function () {
+            // Provjera postoji li nova pozivnica u razgovor
+            CheckChatInvite();
+            // Provjera jeli tvoja pozivnica za razgovor prihvaćena
+            CheckIfInviteAccepted();
+        }, 5000)
+
+        function CheckChatInvite() {
+           $.ajax({
+                    url: '@Url.Action("CheckChatInvite", "Chat")',
+                    dataType: 'json',
+                    type: 'POST'
+                })
+
+                .done(function (result) {
+                    if (result != null && result != undefined) {
+                            if (confirm("Korisnik " + result.From + " vam je poslo zahtjev za razgovor želite li prihvatiti?")) {
+                                $.ajax({
+                                    url: '@Url.Action("AcceptChatInvite", "Chat")',
+                                    data: { chatRoomName: result.ChatRoomName },
+                                    type: 'POST'
+                                })
+
+                                    .done(function () {
+                                        indow.open('@Url.Action("StartChat", "Chat")' + '?chatRoomName=' + result.ChatRoomName, "_blank");
+                                    })
+                                    .fail(function (xhr, status, error) {
+                                        alert('Dogodila se pogreška');
+                                    });
+                            }
+                            else {
+                                $.ajax({
+                                    url: '@Url.Action("DenyChatInvite", "Chat")',
+                                    data: { chatRoomName: result.ChatRoomName },
+                                    type: 'POST'
+                                })
+                                    .fail(function (xhr, status, error) {
+                                        alert('Dogodila se pogreška');
+                                    });
+                            }
+                        }
+                    })
+                   .fail(function (xhr, status, error) {
+                        alert('Dogodila se pogreška');
+                });
+        }
+        function CheckIfInviteAccepted() {
+             $.ajax({
+                    url: '@Url.Action("CheckIfInviteAccepted", "Chat")',
+                    dataType: 'json',
+                    type: 'POST'
+                })
+                    .done(function (result) {
+                     if (result!= null && result!= undefined) {
+                        window.open('@Url.Action("StartChat", "Chat")' + '?chatRoomName=' + result.ChatRoomName, "_blank");
+                     }
+                    })
+                    .fail(function (xhr, status, error) {
+                        alert('Dogodila se pogreška');
+                    });
+        }
+    </script>
 </body>
+
 </html>

@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Chat.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Chat.Serivces
 {
@@ -10,6 +12,7 @@ namespace Chat.Serivces
         static ChatDatabase instance;
 
         public List<string> currentUsers;
+        public List<ChatInvite> ChatInvites;
 
         public static ChatDatabase getInstance()
         {
@@ -17,12 +20,13 @@ namespace Chat.Serivces
             return instance;
         }
 
-        public ChatDatabase()
+        private ChatDatabase()
         {
             currentUsers = new List<string>();
+            ChatInvites = new List<ChatInvite>();
         }
 
-        internal void removeUser(string name)
+        public void removeUser(string name)
         {
             currentUsers.Remove(name);
         }
@@ -35,9 +39,44 @@ namespace Chat.Serivces
             return true;
         }
 
-        internal List<string> getAllUsers()
+        public List<string> getAllUsers()
         {
             return currentUsers;
+        }
+
+        public void CreateChatInvite(ChatInvite chatInvite)
+        {
+            ChatInvites.Add(chatInvite);
+        }
+
+        public ChatInvite CheckChatInvite(string name)
+        {
+            ChatInvite Invite = ChatInvites.Where(x => x.To == name).FirstOrDefault();
+            if (Invite != null)
+            {
+                ChatInvites.Remove(Invite);                
+            }
+            return Invite;
+        }
+
+        public ChatInvite CheckIfInviteAccepted(string name)
+        {
+            ChatInvite Invite = ChatInvites.Where(x => x.From == name && x.Accepted).FirstOrDefault();
+            if (Invite != null)
+            {
+                ChatInvites.Remove(Invite);              
+            }
+            return Invite;
+        }
+
+        public void AcceptChatInvite(string chatRoomName)
+        {
+            ChatInvites.Find(x => x.ChatRoom == chatRoomName).Accepted = true;
+        }
+
+        public void DenyChatInvite(string chatRoomName)
+        {
+            ChatInvites.Remove(ChatInvites.Where(x => x.ChatRoom == chatRoomName).FirstOrDefault());
         }
     }
 }

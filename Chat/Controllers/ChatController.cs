@@ -3,6 +3,7 @@ using Chat.Serivces;
 using System.Collections.Generic;
 using Chat.Filters;
 using OTR;
+using System;
 
 namespace Chat.Controllers
 {
@@ -31,10 +32,34 @@ namespace Chat.Controllers
             return View(allUsers);
         }
 
-        public ActionResult StartChat(string name)
+        public void SendChatInvite(string to)
         {
-            User user = new User();
-            return View();
+            ChatDatabase.getInstance().CreateChatInvite(
+                new Models.ChatInvite { From = Session["name"] as string, To = to, ChatRoom = Guid.NewGuid().ToString() });
+        }
+
+        public JsonResult CheckChatInvite()
+        {
+            return Json(ChatDatabase.getInstance().CheckChatInvite(Session["name"] as string));
+        }
+
+        public JsonResult CheckIfInviteAccepted()
+        {
+            return Json(ChatDatabase.getInstance().CheckIfInviteAccepted(Session["name"] as string));
+        }
+
+        public void AcceptChatInvite(string chatRoomName)
+        {
+            ChatDatabase.getInstance().AcceptChatInvite(chatRoomName);
+        }
+        public void DenyChatInvite(string chatRoomName)
+        {
+            ChatDatabase.getInstance().DenyChatInvite(chatRoomName);
+        }
+
+        public ActionResult StartChat(string chatRoomName)
+        {
+            return View(chatRoomName);
         }
     }
 }
