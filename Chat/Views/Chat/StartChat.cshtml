@@ -1,9 +1,10 @@
 ﻿
 @{
-    ViewBag.Title = "StartChat";
+    ViewBag.Title = "Chat";
 }
 
-<h2>StartChat</h2>
+
+<input type="hidden" id="UserName" value="@Session["name"].ToString()" />
 <script>
     $(function () {
         joinChat('@ViewBag.ChatRoomName', '@Session["name"].ToString()');

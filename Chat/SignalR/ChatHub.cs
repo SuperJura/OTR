@@ -120,23 +120,26 @@ namespace Chat.SignalR
             }
         }
 
-        public void Send(string name, string message, string chatRoomName)
+        public void Send(string message)
         {
             ChatUser Sender = ChatingUsers.Find(x => x.ConnectionId == Context.ConnectionId);
-            ChatUser Reciver = ChatingUsers.Find(x => x.ConnectionId != Context.ConnectionId && x.ChatRoomName == chatRoomName);
+            string ChatRoomName = Sender.ChatRoomName;
+            string Name = Sender.UserName;
+            ChatUser Reciver = ChatingUsers.Find(x => x.ConnectionId != Context.ConnectionId && x.ChatRoomName == ChatRoomName);
             byte[] EncryptedMessage;
             IM.OTRSend(Sender.CurrentDeriveKey, message, out EncryptedMessage);
             byte[] Signature = MAC.Sign(Sender.KeyForSigning, message);
-            Clients.Client(Reciver.ConnectionId).reciveMessage(name, EncryptedMessage, Signature);
+            Clients.Client(Reciver.ConnectionId).reciveMessage(Name, EncryptedMessage, Signature, ChatRoomName);
         }
 
-        public void Recive(string name, byte[] encryptedMessage, string chatRoomName, byte[] signature)
+        public void Recive(string name, byte[] encryptedMessage, byte[] signature)
         {
             ChatUser Reciver = ChatingUsers.Find(x => x.ConnectionId == Context.ConnectionId);
+            string ChatRoomName = Reciver.ChatRoomName;
             String Message = IM.OTRReceive(Reciver.CurrentDeriveKey, encryptedMessage);
             if (MAC.Verify(Reciver.KeyForSigning, signature))
             {
-                Clients.Group(chatRoomName).showMessage(name, Message);
+                Clients.Group(ChatRoomName).showMessage(name, Message);
             }      
         }
 
@@ -159,13 +162,22 @@ namespace Chat.SignalR
 
         }
 
+        public void Logout()
+        {
+            if (LoginUsers.Any(x => x.ConnectionId == Context.ConnectionId))
+            {
+                ChatUser user = LoginUsers.Find(x => x.ConnectionId == Context.ConnectionId);
+                LoginUsers.Remove(user);
+                //GetListOfUsers(user.ChatRoomName);
+            }
+        }
         public override System.Threading.Tasks.Task OnDisconnected(bool stopCalled)
         {
             if (ChatingUsers.Any(x => x.ConnectionId == Context.ConnectionId))
             {
                 ChatUser user = ChatingUsers.Find(x => x.ConnectionId == Context.ConnectionId);
-                ChatingUsers.Remove(ChatingUsers.Find(x => x.ConnectionId == Context.ConnectionId));
-                GetListOfUsers(user.ChatRoomName);
+                ChatingUsers.Remove(user);
+                //GetListOfUsers(user.ChatRoomName);
             }
             return base.OnDisconnected(stopCalled);
         }

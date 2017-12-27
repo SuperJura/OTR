@@ -16,11 +16,30 @@
         window.open('../Chat/StartChat' + '?chatRoomName=' + chatRoom, "_blank");
     }
 
+    chat.client.reciveMessage = function (name, encryptedMessage, signature, chatRoomName) {
+        chat.server.recive(name, encryptedMessage, signature, chatRoomName);
+    }
+
+    chat.client.showMessage = function (name, message) {
+        appendText(name, message);
+    }
+    $("#logout").click(function () {
+        chat.server.logout();
+    });
 });
 
 function login() {
     var chat = $.connection.chatHub;
-    chat.server.login($('#userName').val());
+    chat.server.login($('#UserName').val());
+}
+
+function appendText(name, message) {
+    // Html encode display name and message.
+    var encodedName = $('<div />').text(name).html();
+    var encodedMsg = $('<div />').text(message).html();
+    // Add the message to the page.
+    $('#discussion').append('<li><strong>' + encodedName
+        + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
 }
 
 function joinChat(chatRoomName,userName) {
@@ -32,4 +51,9 @@ function sendChatInvite(from, to) {
     var chat = $.connection.chatHub;
     chat.server.sendChatInvite(from, to);
     alert("Zahtjev je poslan ako odobren razgovor će se otvoriti u novoj kartici.");
+}
+
+function sendMsg() {
+    chat.server.send($('#Message').val());
+    appendText($('#UserName').val(), $('#Message').val());
 }
