@@ -32,34 +32,35 @@ namespace Chat.Controllers
             return View(allUsers);
         }
 
-        public void SendChatInvite(string to)
-        {
-            ChatDatabase.getInstance().CreateChatInvite(
-                new Models.ChatInvite { From = Session["name"] as string, To = to, ChatRoom = Guid.NewGuid().ToString() });
-        }
+        //public void SendChatInvite(string to)
+        //{
+        //    ChatDatabase.getInstance().CreateChatInvite(
+        //        new Models.ChatInvite { From = Session["name"] as string, To = to, ChatRoom = Guid.NewGuid().ToString() });
+        //}
 
-        public JsonResult CheckChatInvite()
-        {
-            return Json(ChatDatabase.getInstance().CheckChatInvite(Session["name"] as string));
-        }
+        //public JsonResult CheckChatInvite()
+        //{
+        //    return Json(ChatDatabase.getInstance().CheckChatInvite(Session["name"] as string));
+        //}
 
-        public JsonResult CheckIfInviteAccepted()
-        {
-            return Json(ChatDatabase.getInstance().CheckIfInviteAccepted(Session["name"] as string));
-        }
+        //public JsonResult CheckIfInviteAccepted()
+        //{
+        //    return Json(ChatDatabase.getInstance().CheckIfInviteAccepted(Session["name"] as string));
+        //}
 
-        public void AcceptChatInvite(string chatRoomName)
-        {
-            ChatDatabase.getInstance().AcceptChatInvite(chatRoomName);
-        }
-        public void DenyChatInvite(string chatRoomName)
-        {
-            ChatDatabase.getInstance().DenyChatInvite(chatRoomName);
-        }
+        //public void AcceptChatInvite(string chatRoomName)
+        //{
+        //    ChatDatabase.getInstance().AcceptChatInvite(chatRoomName);
+        //}
+        //public void DenyChatInvite(string chatRoomName)
+        //{
+        //    ChatDatabase.getInstance().DenyChatInvite(chatRoomName);
+        //}
 
         public ActionResult StartChat(string chatRoomName)
         {
-            return View(chatRoomName);
+            ViewBag.ChatRoomName = chatRoomName;
+            return View();
         }
     }
 }

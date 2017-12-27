@@ -14,18 +14,25 @@ namespace Chat.SignalR
         //{
         //    Clients.All.hello();
         //}
-
-        public static List<ChatUser> ConnectedUsers = new List<ChatUser>();
-
+        public static List<ChatUser> LoginUsers = new List<ChatUser>();
+        public static List<ChatUser> ChatingUsers = new List<ChatUser>();
+        public static List<ChatInvite> ChatInvites = new List<ChatInvite>();
+        public void Login(string userName)
+        {
+            if (LoginUsers.Any(x=> x.UserName == userName) == false)
+            {
+                LoginUsers.Add(new ChatUser { UserName = userName, ConnectionId = Context.ConnectionId });
+            }
+        }
 
         public void JoinChat(string chatRoomName, string UserName)
         {
-                if (!String.IsNullOrEmpty(UserName))
+                if (!String.IsNullOrEmpty(UserName) && LoginUsers.Any(x=>x.UserName == UserName))
                 {
-                    if (!ConnectedUsers.Any(x => x.UserName == UserName && x.ChatRoomName == chatRoomName))
+                    if (!ChatingUsers.Any(x => x.UserName == UserName && x.ChatRoomName == chatRoomName))
                     {
                         ChatUser CurrentUser = new ChatUser { ConnectionId = Context.ConnectionId, ChatRoomName = chatRoomName, UserName = UserName };
-                        ChatUser Reciver = ConnectedUsers.Find(x => x.ConnectionId != Context.ConnectionId && x.ChatRoomName == chatRoomName);
+                        ChatUser Reciver = ChatingUsers.Find(x => x.ConnectionId != Context.ConnectionId && x.ChatRoomName == chatRoomName);
                         if (Reciver != null)
                         {
                         // Ako postoji sugovornik u grupi uzmi javni ključ i napravi novi dervirani ključ
@@ -45,7 +52,7 @@ namespace Chat.SignalR
                             if (Reciver.CurrentDeriveKey == null)
                             {
                                 Reciver.SetDeriveKey(CurrentUser.PublicKey);
-                                ConnectedUsers[ConnectedUsers.IndexOf(Reciver)] = Reciver;
+                                ChatingUsers[ChatingUsers.IndexOf(Reciver)] = Reciver;
                             }
                         }
                         else
@@ -53,21 +60,21 @@ namespace Chat.SignalR
                             // Ako sugovornik još nema naoravi novi dervirani ključ
                             CurrentUser.SetKeyForSigning(Guid.NewGuid().ToString());
                         }
-                        ConnectedUsers.Add(CurrentUser);
+                        ChatingUsers.Add(CurrentUser);
 
                         Groups.Add(Context.ConnectionId, chatRoomName);
 
                     }
                     else
                     {
-                        ChatUser CurrentUser = ConnectedUsers.Find(x => x.UserName == UserName && x.ChatRoomName == chatRoomName);
-                        ConnectedUsers.Find(x => x.UserName == UserName && x.ChatRoomName == chatRoomName).ConnectionId = Context.ConnectionId;
+                        ChatUser CurrentUser = ChatingUsers.Find(x => x.UserName == UserName && x.ChatRoomName == chatRoomName);
+                        ChatingUsers.Find(x => x.UserName == UserName && x.ChatRoomName == chatRoomName).ConnectionId = Context.ConnectionId;
                         if (CurrentUser.CurrentDeriveKey == null)
                         {
-                            ChatUser Reciver = ConnectedUsers.Find(x => x.ConnectionId != Context.ConnectionId && x.ChatRoomName == chatRoomName);
+                            ChatUser Reciver = ChatingUsers.Find(x => x.ConnectionId != Context.ConnectionId && x.ChatRoomName == chatRoomName);
                             if (Reciver != null)
                             {
-                                ConnectedUsers.Find(x => x.UserName == UserName && x.ChatRoomName == chatRoomName).SetDeriveKey(Reciver.PublicKey);
+                                ChatingUsers.Find(x => x.UserName == UserName && x.ChatRoomName == chatRoomName).SetDeriveKey(Reciver.PublicKey);
                             }
                         }
                     }
@@ -78,13 +85,45 @@ namespace Chat.SignalR
 
         public void GetListOfUsers(string chatRoomName)
         {
-            Clients.Group(chatRoomName).fillListOfUsers(ConnectedUsers.Where(x => x.ChatRoomName == chatRoomName));
+            Clients.Group(chatRoomName).fillListOfUsers(ChatingUsers.Where(x => x.ChatRoomName == chatRoomName));
+        }
+
+        public void SendChatInvite(string from, string to)
+        {
+            if (LoginUsers.Any(x => x.UserName == to))
+            {
+                ChatInvite Invite = new Models.ChatInvite { From = from, To = to, ChatRoom = Guid.NewGuid().ToString() };
+                ChatInvites.Add(Invite);
+                Clients.Client(LoginUsers.Find(x => x.UserName == to).ConnectionId).newChatRequest(Invite);
+            }
+        }
+
+        public void AcceptChatInvite(string chatRoom)
+        {
+                ChatInvite Invite = ChatInvites.Where(x => x.ChatRoom == chatRoom).FirstOrDefault();
+                if (Invite != null && LoginUsers.Any(x => x.UserName == Invite.To) && LoginUsers.Any(x => x.UserName == Invite.From))
+                {
+                    Clients.Client(LoginUsers.Find(x => x.UserName == Invite.To).ConnectionId).redirectToChat(chatRoom);
+                    Clients.Client(LoginUsers.Find(x => x.UserName == Invite.From).ConnectionId).redirectToChat(chatRoom);
+                }                    
+        }
+
+        public void DenyChatInvite(string chatRoom)
+        {
+            if (ChatInvites.Any(x => x.ChatRoom == chatRoom) && )
+            {
+                ChatInvite Invite = ChatInvites.Where(x => x.ChatRoom == chatRoom).FirstOrDefault();
+                if (Invite != null )
+                {
+                    ChatInvites.Remove(Invite);
+                }
+            }
         }
 
         public void Send(string name, string message, string chatRoomName)
         {
-            ChatUser Sender = ConnectedUsers.Find(x => x.ConnectionId == Context.ConnectionId);
-            ChatUser Reciver = ConnectedUsers.Find(x => x.ConnectionId != Context.ConnectionId && x.ChatRoomName == chatRoomName);
+            ChatUser Sender = ChatingUsers.Find(x => x.ConnectionId == Context.ConnectionId);
+            ChatUser Reciver = ChatingUsers.Find(x => x.ConnectionId != Context.ConnectionId && x.ChatRoomName == chatRoomName);
             byte[] EncryptedMessage;
             IM.OTRSend(Sender.CurrentDeriveKey, message, out EncryptedMessage);
             byte[] Signature = MAC.Sign(Sender.KeyForSigning, message);
@@ -93,7 +132,7 @@ namespace Chat.SignalR
 
         public void Recive(string name, byte[] encryptedMessage, string chatRoomName, byte[] signature)
         {
-            ChatUser Reciver = ConnectedUsers.Find(x => x.ConnectionId == Context.ConnectionId);
+            ChatUser Reciver = ChatingUsers.Find(x => x.ConnectionId == Context.ConnectionId);
             String Message = IM.OTRReceive(Reciver.CurrentDeriveKey, encryptedMessage);
             if (MAC.Verify(Reciver.KeyForSigning, signature))
             {
@@ -103,8 +142,8 @@ namespace Chat.SignalR
 
         public void NewsDeriveKey(string chatRoomName)
         {
-            ChatUser Bob = ConnectedUsers.Find(x => x.ConnectionId == Context.ConnectionId);
-            ChatUser Alice = ConnectedUsers.Find(x => x.ConnectionId != Context.ConnectionId && x.ChatRoomName == chatRoomName);
+            ChatUser Bob = ChatingUsers.Find(x => x.ConnectionId == Context.ConnectionId);
+            ChatUser Alice = ChatingUsers.Find(x => x.ConnectionId != Context.ConnectionId && x.ChatRoomName == chatRoomName);
 
             Clients.Group(chatRoomName).blockChat();
 
@@ -113,8 +152,8 @@ namespace Chat.SignalR
             Alice.SetDeriveKey(Bob.PublicKey);
             Alice.PreviousDeriveKey = null;
             Bob.PreviousDeriveKey = null;
-            ConnectedUsers[ConnectedUsers.IndexOf(Alice)] = Alice;
-            ConnectedUsers[ConnectedUsers.IndexOf(Bob)] = Bob;
+            ChatingUsers[ChatingUsers.IndexOf(Alice)] = Alice;
+            ChatingUsers[ChatingUsers.IndexOf(Bob)] = Bob;
 
             Clients.Group(chatRoomName).allowChat();
 
@@ -122,10 +161,10 @@ namespace Chat.SignalR
 
         public override System.Threading.Tasks.Task OnDisconnected(bool stopCalled)
         {
-            if (ConnectedUsers.Any(x => x.ConnectionId == Context.ConnectionId))
+            if (ChatingUsers.Any(x => x.ConnectionId == Context.ConnectionId))
             {
-                ChatUser user = ConnectedUsers.Find(x => x.ConnectionId == Context.ConnectionId);
-                ConnectedUsers.Remove(ConnectedUsers.Find(x => x.ConnectionId == Context.ConnectionId));
+                ChatUser user = ChatingUsers.Find(x => x.ConnectionId == Context.ConnectionId);
+                ChatingUsers.Remove(ChatingUsers.Find(x => x.ConnectionId == Context.ConnectionId));
                 GetListOfUsers(user.ChatRoomName);
             }
             return base.OnDisconnected(stopCalled);

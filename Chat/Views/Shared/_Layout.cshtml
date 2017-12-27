@@ -45,14 +45,17 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
-    <script>
 
-        window.setInterval(function () {
-            // Provjera postoji li nova pozivnica u razgovor
-            CheckChatInvite();
-            // Provjera jeli tvoja pozivnica za razgovor prihvaćena
-            CheckIfInviteAccepted();
-        }, 5000)
+    <script src="/signalr/hubs"></script>
+    <script src="~/Scripts/chat.js"></script>
+    @*<script>
+
+        //window.setInterval(function () {
+        //    // Provjera postoji li nova pozivnica u razgovor
+        //    CheckChatInvite();
+        //    // Provjera jeli tvoja pozivnica za razgovor prihvaćena
+        //    CheckIfInviteAccepted();
+        //}, 5000)
 
         function CheckChatInvite() {
            $.ajax({
@@ -71,7 +74,7 @@
                                 })
 
                                     .done(function () {
-                                        indow.open('@Url.Action("StartChat", "Chat")' + '?chatRoomName=' + result.ChatRoomName, "_blank");
+                                        window.open('@Url.Action("StartChat", "Chat")' + '?chatRoomName=' + result.ChatRoomName, "_blank");
                                     })
                                     .fail(function (xhr, status, error) {
                                         alert('Dogodila se pogreška');
@@ -108,7 +111,7 @@
                         alert('Dogodila se pogreška');
                     });
         }
-    </script>
+    </script>*@
 </body>
 
 </html>

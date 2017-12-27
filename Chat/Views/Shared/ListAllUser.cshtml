@@ -13,7 +13,7 @@
                         }
                         else
                         {
-                          <span class="clickable" onclick="SendChatInvite('@Model[i]')">@Model[i]</span>
+                          <span class="clickable" onclick="sendChatInvite('@Model[i]')">@Model[i]</span>
                         }
                     }
                 </li>
@@ -23,18 +23,7 @@
 </div>
 <script>
     function SendChatInvite(to) {
-       $.ajax({
-            url: '@Url.Action("SendChatInvite", "Chat")',
-            data: { to: to },
-            type: 'POST'
-        })
-
-            .done(function () {
-                alert("Zahtjev je poslan ako odobren razgovor će se otvoriti u novoj kartici.");
-            })
-            .fail(function (xhr, status, error) {
-                alert('Dogodila se pogreška');
-            });
+        sendChatInvite('@Session["name"].ToString()', to);
     }
 
 </script>

@@ -11,6 +11,5 @@ namespace Chat.Models
         public string To { get; set; }
 
         public string ChatRoom { get; set; }
-        public bool Accepted { get; set; } = false;
     }
 }
