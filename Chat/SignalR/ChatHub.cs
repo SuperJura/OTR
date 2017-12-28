@@ -110,14 +110,11 @@ namespace Chat.SignalR
 
         public void DenyChatInvite(string chatRoom)
         {
-            if (ChatInvites.Any(x => x.ChatRoom == chatRoom) && )
-            {
                 ChatInvite Invite = ChatInvites.Where(x => x.ChatRoom == chatRoom).FirstOrDefault();
-                if (Invite != null )
+                if (Invite != null)
                 {
                     ChatInvites.Remove(Invite);
-                }
-            }
+                }            
         }
 
         public void Send(string message)
