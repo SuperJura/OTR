@@ -14,8 +14,7 @@
                         else
                         {
                           <span class="clickable" onclick="sendChatInvite('@Model[i]')">@Model[i]</span>
-                        }
-                    }
+                        }                    
                 </li>
             }
         </ul>
@@ -25,5 +24,4 @@
     function SendChatInvite(to) {
         sendChatInvite('@Session["name"].ToString()', to);
     }
-
 </script>
