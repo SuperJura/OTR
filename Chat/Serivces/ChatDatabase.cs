@@ -12,7 +12,7 @@ namespace Chat.Serivces
         static ChatDatabase instance;
 
         public List<string> currentUsers;
-        public List<ChatInvite> ChatInvites;
+        //public List<ChatInvite> ChatInvites;
 
         public static ChatDatabase getInstance()
         {
@@ -23,7 +23,7 @@ namespace Chat.Serivces
         private ChatDatabase()
         {
             currentUsers = new List<string>();
-            ChatInvites = new List<ChatInvite>();
+           // ChatInvites = new List<ChatInvite>();
         }
 
         public void removeUser(string name)
@@ -44,39 +44,39 @@ namespace Chat.Serivces
             return currentUsers;
         }
 
-        public void CreateChatInvite(ChatInvite chatInvite)
-        {
-            ChatInvites.Add(chatInvite);
-        }
+        //public void CreateChatInvite(ChatInvite chatInvite)
+        //{
+        //    ChatInvites.Add(chatInvite);
+        //}
 
-        public ChatInvite CheckChatInvite(string name)
-        {
-            ChatInvite Invite = ChatInvites.Where(x => x.To == name).FirstOrDefault();
-            if (Invite != null)
-            {
-                ChatInvites.Remove(Invite);                
-            }
-            return Invite;
-        }
+        //public ChatInvite CheckChatInvite(string name)
+        //{
+        //    ChatInvite Invite = ChatInvites.Where(x => x.To == name).FirstOrDefault();
+        //    if (Invite != null)
+        //    {
+        //        ChatInvites.Remove(Invite);                
+        //    }
+        //    return Invite;
+        //}
 
-        public ChatInvite CheckIfInviteAccepted(string name)
-        {
-            ChatInvite Invite = ChatInvites.Where(x => x.From == name && x.Accepted).FirstOrDefault();
-            if (Invite != null)
-            {
-                ChatInvites.Remove(Invite);              
-            }
-            return Invite;
-        }
+        //public ChatInvite CheckIfInviteAccepted(string name)
+        //{
+        //    ChatInvite Invite = ChatInvites.Where(x => x.From == name && x.Accepted).FirstOrDefault();
+        //    if (Invite != null)
+        //    {
+        //        ChatInvites.Remove(Invite);              
+        //    }
+        //    return Invite;
+        //}
 
-        public void AcceptChatInvite(string chatRoomName)
-        {
-            ChatInvites.Find(x => x.ChatRoom == chatRoomName).Accepted = true;
-        }
+        //public void AcceptChatInvite(string chatRoomName)
+        //{
+        //    ChatInvites.Find(x => x.ChatRoom == chatRoomName).Accepted = true;
+        //}
 
-        public void DenyChatInvite(string chatRoomName)
-        {
-            ChatInvites.Remove(ChatInvites.Where(x => x.ChatRoom == chatRoomName).FirstOrDefault());
-        }
+        //public void DenyChatInvite(string chatRoomName)
+        //{
+        //    ChatInvites.Remove(ChatInvites.Where(x => x.ChatRoom == chatRoomName).FirstOrDefault());
+        //}
     }
 }

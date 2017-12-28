@@ -2,9 +2,56 @@
 @{
     ViewBag.Title = "Chat";
 }
+<style>
+    ul {
+        list-style-type: none;
+        padding: 1em;
+        margin: 0;
+    }
 
+    #MessageContainer {
+        width: 100%;
+        margin-bottom: 1em;
+        text-align: center;
+        margin-top: 1em;
+    }
+
+    #ChatContainer {
+        float: right;
+        width: 100%;
+        height: 70vh;
+        margin-bottom: 1em;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .content {
+        overflow: hidden;
+    }
+
+    a {
+        cursor: pointer;
+    }
+
+    #Message {
+        width: 100%;
+        height: 5em;
+        resize: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
 
 <input type="hidden" id="UserName" value="@Session["name"].ToString()" />
+<div id="ChatContainer">
+    <div>
+        <ul id="discussion"></ul>
+    </div>
+</div>
+<div id="MessageContainer">
+    <textarea id="Message"></textarea>
+    <input type="button" onclick="sendMsg()" value="Send" />
+</div>
 <script>
     $(function () {
         joinChat('@ViewBag.ChatRoomName', '@Session["name"].ToString()');
