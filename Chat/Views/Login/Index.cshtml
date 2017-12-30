@@ -6,3 +6,8 @@
     @Html.ActionLink("Login", "Login")
     <span>To begin</span>
 </div>
+<script>
+    $(function () {
+        login('@Session["name"].ToString()');
+    });
+</script>

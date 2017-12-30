@@ -32,9 +32,9 @@
     });
 });
 
-function login() {
+function login(userName) {
     var chat = $.connection.chatHub;
-    chat.server.login($('#UserName').val());
+    chat.server.login(userName);
 }
 
 function appendText(name, message) {

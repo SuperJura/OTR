@@ -18,7 +18,7 @@ namespace Chat.SignalR
         public static List<ChatUser> ChatingUsers = new List<ChatUser>();
         public static List<ChatInvite> ChatInvites = new List<ChatInvite>();
 
-        //BUG Ova metoda se nikada ne poziva i zato je LoginUsers uvijek prazan. Nekako treba pozvati ovo. I onda maknuti ChatDatabase jer se u Login controleru puni ta lista.
+        
         public void Login(string userName)
         {
             if (LoginUsers.Any(x=> x.UserName == userName) == false)
@@ -92,7 +92,7 @@ namespace Chat.SignalR
 
         public void SendChatInvite(string from, string to)
         {
-            //BUG Login Users je uvijek prazan
+           
             if (LoginUsers.Any(x => x.UserName == to))
             {
                 ChatInvite Invite = new Models.ChatInvite { From = from, To = to, ChatRoom = Guid.NewGuid().ToString() };
