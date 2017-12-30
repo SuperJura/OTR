@@ -17,6 +17,8 @@ namespace Chat.SignalR
         public static List<ChatUser> LoginUsers = new List<ChatUser>();
         public static List<ChatUser> ChatingUsers = new List<ChatUser>();
         public static List<ChatInvite> ChatInvites = new List<ChatInvite>();
+
+        //BUG Ova metoda se nikada ne poziva i zato je LoginUsers uvijek prazan. Nekako treba pozvati ovo. I onda maknuti ChatDatabase jer se u Login controleru puni ta lista.
         public void Login(string userName)
         {
             if (LoginUsers.Any(x=> x.UserName == userName) == false)
@@ -90,6 +92,7 @@ namespace Chat.SignalR
 
         public void SendChatInvite(string from, string to)
         {
+            //BUG Login Users je uvijek prazan
             if (LoginUsers.Any(x => x.UserName == to))
             {
                 ChatInvite Invite = new Models.ChatInvite { From = from, To = to, ChatRoom = Guid.NewGuid().ToString() };
@@ -100,12 +103,12 @@ namespace Chat.SignalR
 
         public void AcceptChatInvite(string chatRoom)
         {
-                ChatInvite Invite = ChatInvites.Where(x => x.ChatRoom == chatRoom).FirstOrDefault();
-                if (Invite != null && LoginUsers.Any(x => x.UserName == Invite.To) && LoginUsers.Any(x => x.UserName == Invite.From))
-                {
-                    Clients.Client(LoginUsers.Find(x => x.UserName == Invite.To).ConnectionId).redirectToChat(chatRoom);
-                    Clients.Client(LoginUsers.Find(x => x.UserName == Invite.From).ConnectionId).redirectToChat(chatRoom);
-                }                    
+            ChatInvite Invite = ChatInvites.Where(x => x.ChatRoom == chatRoom).FirstOrDefault();
+            if (Invite != null && LoginUsers.Any(x => x.UserName == Invite.To) && LoginUsers.Any(x => x.UserName == Invite.From))
+            {
+                Clients.Client(LoginUsers.Find(x => x.UserName == Invite.To).ConnectionId).redirectToChat(chatRoom);
+                Clients.Client(LoginUsers.Find(x => x.UserName == Invite.From).ConnectionId).redirectToChat(chatRoom);
+            }                    
         }
 
         public void DenyChatInvite(string chatRoom)

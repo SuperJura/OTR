@@ -185,6 +185,8 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Properties\PublishProfiles\otr - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\otr - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\chat.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />

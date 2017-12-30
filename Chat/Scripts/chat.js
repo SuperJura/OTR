@@ -1,6 +1,7 @@
 ﻿$(function () {
     // Declare a proxy to reference the hub.
-    var chat = $.connection.chatHub; 
+    var chat = $.connection.chatHub;
+    
     chat.client.newChatRequest = function (model) {
         if (model != null) {
             if (confirm("Korisnik " + model.From + " vam je poslo zahtjev za razgovor želite li prihvatiti?")) {
@@ -25,6 +26,9 @@
     }
     $("#logout").click(function () {
         chat.server.logout();
+    });
+    $.connection.hub.start().done(function () {
+        //alert("Connected.");
     });
 });
 
