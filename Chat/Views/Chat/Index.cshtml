@@ -6,3 +6,8 @@
 <h2>Index</h2>
 <input type="hidden" id="UserName" value="@Session["name"].ToString()" />
 @{Html.RenderPartial("ListAllUser", Model);}
+<script>
+        $(function () {
+            login('@Session["name"].ToString()');
+        });
+</script>

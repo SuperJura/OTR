@@ -10,7 +10,7 @@ namespace Chat
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
-                        "~/Scripts/jquery.signalR-2.1.2.min.js"));
+                        "~/Scripts/jquery.signalR-2.2.2.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));

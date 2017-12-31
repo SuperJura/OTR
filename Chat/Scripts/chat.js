@@ -25,16 +25,23 @@
         appendText(name, message);
     }
     $("#logout").click(function () {
-        chat.server.logout();
+        $.connection.hub.start().done(function () {
+            chat.server.logout();
+        });
     });
-    $.connection.hub.start().done(function () {
-        //alert("Connected.");
-    });
+
+    //$.connection.hub.start().done(function () {
+    //    //alert("Connected.");
+    //});
 });
 
 function login(userName) {
+  
     var chat = $.connection.chatHub;
-    chat.server.login(userName);
+    $.connection.hub.start().done(function () {
+        chat.server.login(userName);
+    });
+   
 }
 
 function appendText(name, message) {
@@ -48,16 +55,25 @@ function appendText(name, message) {
 
 function joinChat(chatRoomName,userName) {
     var chat = $.connection.chatHub;
-    chat.server.joinChat(chatRoomName, userName);
+    chat.start().done(function () {
+        chat.server.joinChat(chatRoomName, userName);
+    });
 }
 
 function sendChatInvite(from, to) {
     var chat = $.connection.chatHub;
-    chat.server.sendChatInvite(from, to);
+    chat.start().done(function () {
+        chat.server.sendChatInvite(from, to);
+    });
+   
     alert("Zahtjev je poslan ako odobren razgovor će se otvoriti u novoj kartici.");
 }
 
 function sendMsg() {
-    chat.server.send($('#Message').val());
+    var chat = $.connection.chatHub;
+    chat.start().done(function () {
+        chat.server.send($('#Message').val());
+    });
+    
     appendText($('#UserName').val(), $('#Message').val());
 }
