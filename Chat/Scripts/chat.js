@@ -29,10 +29,6 @@
             chat.server.logout();
         });
     });
-
-    //$.connection.hub.start().done(function () {
-    //    //alert("Connected.");
-    //});
 });
 
 function login(userName) {

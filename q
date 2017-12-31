@@ -1,0 +1,61 @@
+[33mcommit 669405e4cdcd350b00eebcdaf05a12dadb941614[m
+Author: Ivan Čiček <icicek@racunarstvo.hr>
+Date:   Sat Dec 30 18:02:17 2017 +0100
+
+    Bug fix chat login method
+
+[1mdiff --git a/Chat/Scripts/chat.js b/Chat/Scripts/chat.js[m
+[1mindex 8a19da0..aa4c07f 100644[m
+[1m--- a/Chat/Scripts/chat.js[m
+[1m+++ b/Chat/Scripts/chat.js[m
+[36m@@ -32,9 +32,9 @@[m
+     });[m
+ });[m
+ [m
+[31m-function login() {[m
+[32m+[m[32mfunction login(userName) {[m
+     var chat = $.connection.chatHub;[m
+[31m-    chat.server.login($('#UserName').val());[m
+[32m+[m[32m    chat.server.login(userName);[m
+ }[m
+ [m
+ function appendText(name, message) {[m
+[1mdiff --git a/Chat/SignalR/ChatHub.cs b/Chat/SignalR/ChatHub.cs[m
+[1mindex df72654..d9fefd3 100644[m
+[1m--- a/Chat/SignalR/ChatHub.cs[m
+[1m+++ b/Chat/SignalR/ChatHub.cs[m
+[36m@@ -18,7 +18,7 @@[m [mnamespace Chat.SignalR[m
+         public static List<ChatUser> ChatingUsers = new List<ChatUser>();[m
+         public static List<ChatInvite> ChatInvites = new List<ChatInvite>();[m
+ [m
+[31m-        //BUG Ova metoda se nikada ne poziva i zato je LoginUsers uvijek prazan. Nekako treba pozvati ovo. I onda maknuti ChatDatabase jer se u Login controleru puni ta lista.[m
+[32m+[m[41m        [m
+         public void Login(string userName)[m
+         {[m
+             if (LoginUsers.Any(x=> x.UserName == userName) == false)[m
+[36m@@ -92,7 +92,7 @@[m [mnamespace Chat.SignalR[m
+ [m
+         public void SendChatInvite(string from, string to)[m
+         {[m
+[31m-            //BUG Login Users je uvijek prazan[m
+[32m+[m[41m           [m
+             if (LoginUsers.Any(x => x.UserName == to))[m
+             {[m
+                 ChatInvite Invite = new Models.ChatInvite { From = from, To = to, ChatRoom = Guid.NewGuid().ToString() };[m
+[1mdiff --git a/Chat/Views/Login/Index.cshtml b/Chat/Views/Login/Index.cshtml[m
+[1mindex 9f1914d..72484ff 100644[m
+[1m--- a/Chat/Views/Login/Index.cshtml[m
+[1m+++ b/Chat/Views/Login/Index.cshtml[m
+[36m@@ -5,4 +5,9 @@[m
+     <h1>Welcome to OTR Chat</h1>[m
+     @Html.ActionLink("Login", "Login")[m
+     <span>To begin</span>[m
+[31m-</div>[m
+\ No newline at end of file[m
+[32m+[m[32m</div>[m
+[32m+[m[32m<script>[m
+[32m+[m[32m    $(function () {[m
+[32m+[m[32m        login('@Session["name"].ToString()');[m
+[32m+[m[32m    });[m
+[32m+[m[32m</script>[m
+\ No newline at end of file[m

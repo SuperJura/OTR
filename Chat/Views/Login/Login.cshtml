@@ -11,7 +11,14 @@
 
 @using (Html.BeginForm("Login", "Chat", FormMethod.Post))
 {
-    <input type="Text" placeholder="Name" name="name">
+    <input type="Text" placeholder="Name" name="name" id="txtName">
     <div/>
-    <input type="submit" value="Login"/>
+    <input type="submit" value="Login" onclick="loginClient()"/>
 }
+
+<script>
+    function loginClient() {
+        var val = $("#txtName").val();
+        login(val);
+    }
+</script>
