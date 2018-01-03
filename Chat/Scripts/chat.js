@@ -51,14 +51,14 @@ function appendText(name, message) {
 
 function joinChat(chatRoomName,userName) {
     var chat = $.connection.chatHub;
-    chat.start().done(function () {
+    $.connection.hub.start().done(function () {
         chat.server.joinChat(chatRoomName, userName);
     });
 }
 
 function sendChatInvite(from, to) {
     var chat = $.connection.chatHub;
-    chat.start().done(function () {
+    $.connection.hub.start().done(function () {
         chat.server.sendChatInvite(from, to);
     });
    
@@ -67,7 +67,7 @@ function sendChatInvite(from, to) {
 
 function sendMsg() {
     var chat = $.connection.chatHub;
-    chat.start().done(function () {
+    $.connection.hub.start().done(function () {
         chat.server.send($('#Message').val());
     });
     
