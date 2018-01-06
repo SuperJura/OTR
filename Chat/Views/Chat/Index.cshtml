@@ -6,8 +6,10 @@
 <h2>Index</h2>
 <input type="hidden" id="UserName" value="@Session["name"].ToString()" />
 @{Html.RenderPartial("ListAllUser", Model);}
-@*<script>
-        $(function () {
-            login('@Session["name"].ToString()');
+<script>
+    $(function () {
+            if ('@TempData["Login"]' == 'True') {
+                login('@Session["name"].ToString()');
+            }
         });
-</script>*@
+</script>

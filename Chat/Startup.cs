@@ -13,6 +13,11 @@ namespace Chat
     {
         public void Configuration(IAppBuilder app)
         {
+            //app.UseCookieAuthentication(new CookieAuthenticationOptions
+            //{
+            //    AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+            //    LoginPath = new PathString("/Login/Index")
+            //});
             app.MapSignalR();
         }
     }

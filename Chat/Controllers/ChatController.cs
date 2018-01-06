@@ -15,6 +15,8 @@ namespace Chat.Controllers
             if (success)
             {
                 Session["name"] = name;
+                System.Web.Security.FormsAuthentication.SetAuthCookie(name, true);
+                TempData["Login"] = true;
                 return RedirectToAction("Index");
             }
             else

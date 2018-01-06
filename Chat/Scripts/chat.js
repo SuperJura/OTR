@@ -13,17 +13,39 @@
         }
     };
 
+
+    chat.client.fillListOfAllUsers = function (model) {
+        if (model != null) {
+            $("#UserList").empty();
+            $.each(model, function (index, data) {
+                if (data.DisplayUserName == $('#UserName').val()) {
+                    $("#UserList").append('<li><span>' + data.DisplayUserName + ' (me)</span></li>');
+                }
+                else {
+                    $("#UserList").append('<li><span class="clickable" onclick="SendChatInviteClient(\'' + data.DisplayUserName + '\')">' + data.DisplayUserName + '</span></li>');
+                }
+            });
+        }
+    };
+
     chat.client.redirectToChat = function (chatRoom) {
         window.open('../Chat/StartChat' + '?chatRoomName=' + chatRoom, "_blank");
     }
 
     chat.client.reciveMessage = function (name, encryptedMessage, signature, chatRoomName) {
-        chat.server.recive(name, encryptedMessage, signature, chatRoomName);
+        if ($('#ChatRoomName').length && $('#ChatRoomName').val() == chatRoomName) {
+            chat.server.recive(name, encryptedMessage, signature);
+        }
     }
 
     chat.client.showMessage = function (name, message) {
         appendText(name, message);
     }
+
+    chat.client.closeWindow = function () {
+        window.close();
+    }
+    
     $("#logout").click(function () {
         $.connection.hub.start().done(function () {
             chat.server.logout();
@@ -32,12 +54,13 @@
 });
 
 function login(userName) {
-  
     var chat = $.connection.chatHub;
-    $.connection.hub.start().done(function () {
-        chat.server.login(userName);
-    });
-   
+        $.connection.hub.start().done(function () {
+            chat.server.login(userName);
+            console.log("login");
+        }).fail(function (reason) {
+            console.log("SignalR connection failed: " + reason);
+        });
 }
 
 function appendText(name, message) {
@@ -66,10 +89,13 @@ function sendChatInvite(from, to) {
 }
 
 function sendMsg() {
+    console.log("sendMsg");
     var chat = $.connection.chatHub;
     $.connection.hub.start().done(function () {
         chat.server.send($('#Message').val());
+        $('#Message').val("");
+        //appendText($('#UserName').val(), $('#Message').val());
     });
     
-    appendText($('#UserName').val(), $('#Message').val());
+   
 }

@@ -9,16 +9,17 @@
     </div>
 }
 
-@using (Html.BeginForm("Login", "Chat", FormMethod.Post))
+@using (Html.BeginForm("Login", "Chat", FormMethod.Post,new { id= "LoginForm" }))
 {
     <input type="Text" placeholder="Name" name="name" id="txtName">
     <div/>
-    <input type="submit" value="Login" onclick="loginClient()"/>
+    <input type="submit" value="Login"/>
 }
 
-<script>
+@*<script>
     function loginClient() {
         var val = $("#txtName").val();
         login(val);
+        
     }
-</script>
+</script>*@
