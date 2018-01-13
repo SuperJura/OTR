@@ -45,6 +45,14 @@
     chat.client.closeWindow = function () {
         window.close();
     }
+
+    chat.client.blockChat = function () {
+        $('#btnSend').prop('disabled', true);
+    }
+
+    chat.client.allowChat = function () {
+        $('#btnSend').prop('disabled', false);
+    }
     
     $("#logout").click(function () {
         $.connection.hub.start().done(function () {

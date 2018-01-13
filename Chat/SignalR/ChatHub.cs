@@ -153,6 +153,7 @@ namespace Chat.SignalR
             String Message = IM.OTRReceive(Reciver.CurrentDeriveKey, encryptedMessage);
             if (MAC.Verify(Reciver.KeyForSigning, signature))
             {
+                NewsDeriveKey(ChatRoomName);
                 Clients.Group(ChatRoomName).showMessage(name, Message);
             }      
         }
