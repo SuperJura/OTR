@@ -32,6 +32,7 @@ namespace Chat.SignalR
         {
                 if (!String.IsNullOrEmpty(UserName) && LoginUsers.Any(x=>x.DisplayUserName == UserName))
                 {
+                    //RUKOVANJE
                     if (!ChatingUsers.Any(x => x.DisplayUserName == UserName && x.ChatRoomName == chatRoomName))
                     {
                         ChatUser CurrentUser = new ChatUser { ChatUserName = Context.User.Identity.Name, ChatRoomName = chatRoomName, DisplayUserName = UserName };
@@ -40,7 +41,7 @@ namespace Chat.SignalR
                         {
                         // Ako postoji sugovornik u grupi uzmi javni ključ i napravi novi dervirani ključ
                         CurrentUser.SetDeriveKey(Reciver.PublicKey);
-                        // Ako sugovornik ima već ključ za potpisivanje uzmi i stavi za ključ za potpisivanje trenutnog korisnika
+                        // Ako sugovornik ima već ključ za potpisivanje (MAC) uzmi i stavi za ključ za potpisivanje trenutnog korisnika
                         // Ako nema napravi novi ključ i postavi ga
                             if (Reciver.KeyForSigning != null)
                             {
