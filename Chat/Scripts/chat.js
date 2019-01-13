@@ -4,7 +4,7 @@
     
     chat.client.newChatRequest = function (model) {
         if (model != null) {
-            if (confirm("Korisnik " + model.From + " vam je poslo zahtjev za razgovor želite li prihvatiti?")) {
+            if (confirm("Korisnik " + model.From + " vam je poslao zahtjev za razgovor želite li prihvatiti?")) {
                 chat.server.acceptChatInvite(model.ChatRoom);
             }
             else {
@@ -102,7 +102,6 @@ function sendMsg() {
     $.connection.hub.start().done(function () {
         chat.server.send($('#Message').val());
         $('#Message').val("");
-        //appendText($('#UserName').val(), $('#Message').val());
     });
     
    

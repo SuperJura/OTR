@@ -10,10 +10,6 @@ namespace Chat.SignalR
 {
     public class ChatHub : Hub
     {
-        //public void Hello()
-        //{
-        //    Clients.All.hello();
-        //}
         public static List<ChatUser> LoginUsers = new List<ChatUser>();
         public static List<ChatUser> ChatingUsers = new List<ChatUser>();
         public static List<ChatInvite> ChatInvites = new List<ChatInvite>();
@@ -32,53 +28,52 @@ namespace Chat.SignalR
         {
                 if (!String.IsNullOrEmpty(UserName) && LoginUsers.Any(x=>x.DisplayUserName == UserName))
                 {
-                    //RUKOVANJE
                     if (!ChatingUsers.Any(x => x.DisplayUserName == UserName && x.ChatRoomName == chatRoomName))
                     {
-                        ChatUser CurrentUser = new ChatUser { ChatUserName = Context.User.Identity.Name, ChatRoomName = chatRoomName, DisplayUserName = UserName };
-                        ChatUser Reciver = ChatingUsers.Find(x => x.ChatUserName != Context.User.Identity.Name && x.ChatRoomName == chatRoomName);
-                        if (Reciver != null)
+                        ChatUser currentUser = new ChatUser { ChatUserName = Context.User.Identity.Name, ChatRoomName = chatRoomName, DisplayUserName = UserName };
+                        ChatUser reciver = ChatingUsers.Find(x => x.ChatUserName != Context.User.Identity.Name && x.ChatRoomName == chatRoomName);
+                        if (reciver != null)
                         {
                         // Ako postoji sugovornik u grupi uzmi javni ključ i napravi novi dervirani ključ
-                        CurrentUser.SetDeriveKey(Reciver.PublicKey);
-                        // Ako sugovornik ima već ključ za potpisivanje (MAC) uzmi i stavi za ključ za potpisivanje trenutnog korisnika
+                        currentUser.SetDeriveKey(reciver.PublicKey);
+                        // Ako sugovornik ima već ključ za potpisivanje uzmi i stavi za ključ za potpisivanje trenutnog korisnika
                         // Ako nema napravi novi ključ i postavi ga
-                            if (Reciver.KeyForSigning != null)
+                            if (reciver.KeyForSigning != null)
                             {
-                                CurrentUser.KeyForSigning = Reciver.KeyForSigning;
+                                currentUser.KeyForSigning = reciver.KeyForSigning;
                             }
                             else
                             {
-                                CurrentUser.SetKeyForSigning(Guid.NewGuid().ToString());
-                                Reciver.KeyForSigning = CurrentUser.KeyForSigning;
+                                currentUser.SetKeyForSigning(Guid.NewGuid().ToString());
+                                reciver.KeyForSigning = currentUser.KeyForSigning;
                             }
                             // Ako sugovornik nema dervirani ključ postavi ga koristeči javni ključ trenutnog korisnika
-                            if (Reciver.CurrentDeriveKey == null)
+                            if (reciver.CurrentDeriveKey == null)
                             {
-                                Reciver.SetDeriveKey(CurrentUser.PublicKey);
-                                ChatingUsers[ChatingUsers.IndexOf(Reciver)] = Reciver;
+                                reciver.SetDeriveKey(currentUser.PublicKey);
+                                ChatingUsers[ChatingUsers.IndexOf(reciver)] = reciver;
                             }
                         }
                         else
                         {
                              // Ako sugovornik još nema napravi novi  ključ za potpisivanje
-                            CurrentUser.SetKeyForSigning(Guid.NewGuid().ToString());
+                            currentUser.SetKeyForSigning(Guid.NewGuid().ToString());
                         }
 
-                        ChatingUsers.Add(CurrentUser);
+                        ChatingUsers.Add(currentUser);
                         Groups.Add(Context.ConnectionId, chatRoomName);
 
                     }
                     else
                     {
-                        ChatUser CurrentUser = ChatingUsers.Find(x => x.DisplayUserName == UserName && x.ChatRoomName == chatRoomName);
+                        ChatUser currentUser = ChatingUsers.Find(x => x.DisplayUserName == UserName && x.ChatRoomName == chatRoomName);
                         ChatingUsers.Find(x => x.DisplayUserName == UserName && x.ChatRoomName == chatRoomName).ChatUserName = Context.User.Identity.Name;
-                        if (CurrentUser.CurrentDeriveKey == null)
+                        if (currentUser.CurrentDeriveKey == null)
                         {
-                            ChatUser Reciver = ChatingUsers.Find(x => x.ChatUserName != Context.User.Identity.Name && x.ChatRoomName == chatRoomName);
-                            if (Reciver != null)
+                            ChatUser reciver = ChatingUsers.Find(x => x.ChatUserName != Context.User.Identity.Name && x.ChatRoomName == chatRoomName);
+                            if (reciver != null)
                             {
-                                ChatingUsers.Find(x => x.DisplayUserName == UserName && x.ChatRoomName == chatRoomName).SetDeriveKey(Reciver.PublicKey);
+                                ChatingUsers.Find(x => x.DisplayUserName == UserName && x.ChatRoomName == chatRoomName).SetDeriveKey(reciver.PublicKey);
                             }
                         }
                     }
@@ -102,47 +97,46 @@ namespace Chat.SignalR
            
             if (LoginUsers.Any(x => x.DisplayUserName == to))
             {
-                ChatInvite Invite = new Models.ChatInvite { From = from.Trim(), To = to.Trim(), ChatRoom = Guid.NewGuid().ToString() };
-                ChatInvites.Add(Invite);
+                ChatInvite invite = new Models.ChatInvite { From = from.Trim(), To = to.Trim(), ChatRoom = Guid.NewGuid().ToString() };
+                ChatInvites.Add(invite);
                 
-                string UserId = LoginUsers.Find(x => x.DisplayUserName == to).ChatUserName;
-                Clients.User(UserId).newChatRequest(Invite);
+                string userId = LoginUsers.Find(x => x.DisplayUserName == to).ChatUserName;
+                Clients.User(userId).newChatRequest(invite);
             }
         }
 
         public void AcceptChatInvite(string chatRoom)
         {
-            ChatInvite Invite = ChatInvites.Where(x => x.ChatRoom == chatRoom).FirstOrDefault();
-            if (Invite != null && LoginUsers.Any(x => x.DisplayUserName == Invite.To) && LoginUsers.Any(x => x.DisplayUserName == Invite.From))
+            ChatInvite invite = ChatInvites.FirstOrDefault(x => x.ChatRoom == chatRoom);
+            if (invite != null && LoginUsers.Any(x => x.DisplayUserName == invite.To) && LoginUsers.Any(x => x.DisplayUserName == invite.From))
             {
-                string To = LoginUsers.Find(x => x.DisplayUserName == Invite.To).ChatUserName;
-                string From = LoginUsers.Find(x => x.DisplayUserName == Invite.From).ChatUserName;
-                Clients.User(To).redirectToChat(chatRoom);
-                Clients.User(From).redirectToChat(chatRoom);
+                string to = LoginUsers.Find(x => x.DisplayUserName == invite.To).ChatUserName;
+                string from = LoginUsers.Find(x => x.DisplayUserName == invite.From).ChatUserName;
+                Clients.User(to).redirectToChat(chatRoom);
+                Clients.User(from).redirectToChat(chatRoom);
             }                    
         }
 
         public void DenyChatInvite(string chatRoom)
         {
-                ChatInvite Invite = ChatInvites.Where(x => x.ChatRoom == chatRoom).FirstOrDefault();
-                if (Invite != null)
+                ChatInvite invite = ChatInvites.FirstOrDefault(x => x.ChatRoom == chatRoom);
+                if (invite != null)
                 {
-                    ChatInvites.Remove(Invite);
+                    ChatInvites.Remove(invite);
                 }            
         }
 
         public void Send(string message)
         {
-            ChatUser Sender = ChatingUsers.Find(x => x.ChatUserName == Context.User.Identity.Name);
-            string ChatRoomName = Sender.ChatRoomName;
-            string Name = Sender.DisplayUserName;
-            ChatUser Reciver = ChatingUsers.Find(x => x.ChatUserName != Context.User.Identity.Name && x.ChatRoomName == ChatRoomName);
-            byte[] EncryptedMessage;
-            if (Sender.CurrentDeriveKey != null)
+            ChatUser sender = ChatingUsers.Find(x => x.ChatUserName == Context.User.Identity.Name);
+            string chatRoomName = sender.ChatRoomName;
+            string name = sender.DisplayUserName;
+            ChatUser reciver = ChatingUsers.Find(x => x.ChatUserName != Context.User.Identity.Name && x.ChatRoomName == chatRoomName);
+            if (sender.CurrentDeriveKey != null)
             {
-                IM.OTRSend(Sender.CurrentDeriveKey, message, out EncryptedMessage);
-                byte[] Signature = MAC.Sign(Sender.KeyForSigning, message);
-                Clients.User(Reciver.ChatUserName).reciveMessage(Name, EncryptedMessage, Signature, ChatRoomName);
+                IM.OTRSend(sender.CurrentDeriveKey, message, out byte[] encryptedMessage);
+                byte[] signature = MAC.Sign(sender.KeyForSigning, message);
+                Clients.User(reciver.ChatUserName).reciveMessage(name, encryptedMessage, signature, chatRoomName);
             }
             
         }
@@ -155,7 +149,7 @@ namespace Chat.SignalR
             if (MAC.Verify(Reciver.KeyForSigning, signature))
             {
                 NewsDeriveKey(ChatRoomName);
-                Clients.Group(ChatRoomName).showMessage(name, Message);
+                Clients.Group(ChatRoomName).showMessage(name, Message + " EM: " + System.Text.Encoding.Default.GetString(encryptedMessage));
             }      
         }
 
@@ -183,20 +177,8 @@ namespace Chat.SignalR
             if (LoginUsers.Any(x => x.ChatUserName == Context.User.Identity.Name))
             {
                 ChatUser user = LoginUsers.Find(x => x.ChatUserName == Context.User.Identity.Name);
-                LoginUsers.Remove(user);
-                //GetListOfUsers(user.ChatRoomName);
+                LoginUsers.Remove(user);             
             }
-        }
-        public override System.Threading.Tasks.Task OnDisconnected(bool stopCalled)
-        {
-            //if (ChatingUsers.Any(x => x.ChatUserName == Context.User.Identity.Name))
-            //{
-            //    ChatUser user = ChatingUsers.Find(x => x.ChatUserName == Context.User.Identity.Name);
-            //    ChatingUsers.Remove(user);
-            //    //Clients.User(Context.User.Identity.Name).closeWindow();
-            //    //GetListOfUsers(user.ChatRoomName);
-            //}
-            return base.OnDisconnected(stopCalled);
         }
 
 
